@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package com.spring.grpc;
+
+option java_multiple_files = true;
+
+
+import "google/protobuf/empty.proto";
+//import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+message Book {
+  int32 book_id = 1;
+  string title = 2;
+  float price = 3;
+  int32 pages = 4;
+  int32 author_id = 5;
+}
+
+message Author {
+  int32 author_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string gender = 4;
+  int32 book_id = 5;
+}
+
+message Empty{}
+
+message BookList{
+  repeated Book book = 1;
+}
+
+service BookAuthorService{
+
+  //unary - synchronous
+  //client will send one request and server will respond with one response.
+  rpc getAuthor(Author) returns (Author){
+    /*option (google.api.http) = {
+      get: "/v1/author/{id}"
+    };*/
+  }
+
+  //server side streaming - asynchronous
+  //client will send one request and server will respond with stream of messages to client
+  rpc getBooksByAuthor(Author) returns (stream Book){};
+
+  //client streaming - asynchronous
+  //client will send stream of messages and server will respond with one message.
+  rpc getExpensiveBooks(stream Book) returns (Book){}
+
+  //bi-directional streaming - asynchronous
+  //client will send stream of messages and server will respond with stream of messages
+  rpc getBooksByAuthorGender(stream Book) returns (stream Book){}
+
+  rpc getAllBooks(Empty) returns (BookList){}
+
+}
